@@ -1,0 +1,545 @@
+{
+  "k": 5,
+  "config_hash": "a91a99ab432c",
+  "cases": [
+    {
+      "case_id": "compliance-01",
+      "route": "compliance",
+      "retrieved_ids": [
+        "c1",
+        "c4",
+        "c8",
+        "h15",
+        "h6"
+      ],
+      "algorithmic": {
+        "recall_at_k": 1.0,
+        "precision_at_k": 0.2,
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_k": 1.0
+      },
+      "judged": {
+        "faithfulness": 1.0,
+        "context_precision": 1.0,
+        "answer_relevance": 0.4216370213557839,
+        "context_recall": 1.0
+      },
+      "unsupported_claims": [],
+      "answer": "Deleted documents stay in the trash for 30 days before permanent removal. Guests can only see projects they are invited to."
+    },
+    {
+      "case_id": "compliance-02",
+      "route": "compliance",
+      "retrieved_ids": [
+        "c2"
+      ],
+      "algorithmic": {
+        "recall_at_k": 1.0,
+        "precision_at_k": 0.2,
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_k": 1.0
+      },
+      "judged": {
+        "faithfulness": 1.0,
+        "context_precision": 1.0,
+        "answer_relevance": 0.670820393249937,
+        "context_recall": 1.0
+      },
+      "unsupported_claims": [],
+      "answer": "Audit logs are retained for 365 days."
+    },
+    {
+      "case_id": "compliance-03",
+      "route": "compliance",
+      "retrieved_ids": [
+        "c3",
+        "c11",
+        "c12",
+        "c5",
+        "c6"
+      ],
+      "algorithmic": {
+        "recall_at_k": 1.0,
+        "precision_at_k": 0.2,
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_k": 1.0
+      },
+      "judged": {
+        "faithfulness": 1.0,
+        "context_precision": 1.0,
+        "answer_relevance": 0.4082482904638631,
+        "context_recall": 1.0
+      },
+      "unsupported_claims": [],
+      "answer": "Workspace admins manage member roles on the Members page. Single sign-on supports SAML identity providers."
+    },
+    {
+      "case_id": "compliance-04",
+      "route": "compliance",
+      "retrieved_ids": [
+        "c4",
+        "c8",
+        "h8",
+        "c1",
+        "c3"
+      ],
+      "algorithmic": {
+        "recall_at_k": 1.0,
+        "precision_at_k": 0.2,
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_k": 1.0
+      },
+      "judged": {
+        "faithfulness": 1.0,
+        "context_precision": 1.0,
+        "answer_relevance": 0.22987413700900805,
+        "context_recall": 1.0
+      },
+      "unsupported_claims": [],
+      "answer": "Guests can only see projects they are invited to. Data export requests are handled by admins from the Privacy page."
+    },
+    {
+      "case_id": "compliance-05",
+      "route": "compliance",
+      "retrieved_ids": [
+        "c5",
+        "c1",
+        "c10",
+        "c15",
+        "c3"
+      ],
+      "algorithmic": {
+        "recall_at_k": 1.0,
+        "precision_at_k": 0.2,
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_k": 1.0
+      },
+      "judged": {
+        "faithfulness": 1.0,
+        "context_precision": 1.0,
+        "answer_relevance": 0.3651483716701109,
+        "context_recall": 1.0
+      },
+      "unsupported_claims": [],
+      "answer": "Two-factor authentication can be required for all members. Deleted documents stay in the trash for 30 days before permanent removal."
+    },
+    {
+      "case_id": "compliance-06",
+      "route": "compliance",
+      "retrieved_ids": [
+        "c6",
+        "h11"
+      ],
+      "algorithmic": {
+        "recall_at_k": 1.0,
+        "precision_at_k": 0.2,
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_k": 1.0
+      },
+      "judged": {
+        "faithfulness": 1.0,
+        "context_precision": 1.0,
+        "answer_relevance": 0.6592788728348152,
+        "context_recall": 1.0
+      },
+      "unsupported_claims": [],
+      "answer": "Sessions expire after 12 hours of inactivity. To record a meeting summary, press Summarize after the meeting ends."
+    },
+    {
+      "case_id": "compliance-07",
+      "route": "compliance",
+      "retrieved_ids": [
+        "c7"
+      ],
+      "algorithmic": {
+        "recall_at_k": 1.0,
+        "precision_at_k": 0.2,
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_k": 1.0
+      },
+      "judged": {
+        "faithfulness": 1.0,
+        "context_precision": 1.0,
+        "answer_relevance": 0.0,
+        "context_recall": 1.0
+      },
+      "unsupported_claims": [],
+      "answer": "Workspace data is encrypted at rest and in transit."
+    },
+    {
+      "case_id": "compliance-08",
+      "route": "compliance",
+      "retrieved_ids": [
+        "c8",
+        "c9",
+        "c15",
+        "c1",
+        "c10"
+      ],
+      "algorithmic": {
+        "recall_at_k": 1.0,
+        "precision_at_k": 0.2,
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_k": 1.0
+      },
+      "judged": {
+        "faithfulness": 1.0,
+        "context_precision": 1.0,
+        "answer_relevance": 0.5116069978002273,
+        "context_recall": 1.0
+      },
+      "unsupported_claims": [],
+      "answer": "Data export requests are handled by admins from the Privacy page. A member can ask for their personal data to be erased."
+    },
+    {
+      "case_id": "compliance-09",
+      "route": "compliance",
+      "retrieved_ids": [
+        "c10",
+        "h10",
+        "h11",
+        "h9"
+      ],
+      "algorithmic": {
+        "recall_at_k": 1.0,
+        "precision_at_k": 0.2,
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_k": 1.0
+      },
+      "judged": {
+        "faithfulness": 1.0,
+        "context_precision": 1.0,
+        "answer_relevance": 0.521749194749951,
+        "context_recall": 1.0
+      },
+      "unsupported_claims": [],
+      "answer": "Meeting recordings are stored for 90 days by default. Meeting notes are created from a template when the meeting starts."
+    },
+    {
+      "case_id": "compliance-10",
+      "route": "compliance",
+      "retrieved_ids": [
+        "c11",
+        "c14",
+        "c6"
+      ],
+      "algorithmic": {
+        "recall_at_k": 1.0,
+        "precision_at_k": 0.2,
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_k": 1.0
+      },
+      "judged": {
+        "faithfulness": 1.0,
+        "context_precision": 1.0,
+        "answer_relevance": 0.5443310539518175,
+        "context_recall": 1.0
+      },
+      "unsupported_claims": [],
+      "answer": "Single sign-on supports SAML identity providers. Backups are taken every night and kept for 35 days."
+    },
+    {
+      "case_id": "help-01",
+      "route": "help",
+      "retrieved_ids": [
+        "c4",
+        "h1",
+        "c8",
+        "h13",
+        "h15"
+      ],
+      "algorithmic": {
+        "recall_at_k": 1.0,
+        "precision_at_k": 0.2,
+        "hit_rate": 1.0,
+        "mrr": 0.5,
+        "ndcg_at_k": 0.6309297535714575
+      },
+      "judged": {
+        "faithfulness": 1.0,
+        "context_precision": 1.0,
+        "answer_relevance": 0.38490017945975064,
+        "context_recall": 1.0
+      },
+      "unsupported_claims": [],
+      "answer": "Guests can only see projects they are invited to. To create a project, open the Projects page and press New project."
+    },
+    {
+      "case_id": "help-02",
+      "route": "help",
+      "retrieved_ids": [
+        "h2",
+        "c4",
+        "c8",
+        "h1",
+        "h15"
+      ],
+      "algorithmic": {
+        "recall_at_k": 1.0,
+        "precision_at_k": 0.2,
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_k": 1.0
+      },
+      "judged": {
+        "faithfulness": 1.0,
+        "context_precision": 1.0,
+        "answer_relevance": 0.5178620662207215,
+        "context_recall": 1.0
+      },
+      "unsupported_claims": [],
+      "answer": "To archive a project, open its settings and choose Archive. Guests can only see projects they are invited to."
+    },
+    {
+      "case_id": "help-03",
+      "route": "help",
+      "retrieved_ids": [
+        "h3",
+        "c8",
+        "h15",
+        "c4",
+        "h1"
+      ],
+      "algorithmic": {
+        "recall_at_k": 1.0,
+        "precision_at_k": 0.2,
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_k": 1.0
+      },
+      "judged": {
+        "faithfulness": 1.0,
+        "context_precision": 1.0,
+        "answer_relevance": 0.4714045207910318,
+        "context_recall": 1.0
+      },
+      "unsupported_claims": [],
+      "answer": "To add a task, open a project and press New task. Data export requests are handled by admins from the Privacy page."
+    },
+    {
+      "case_id": "help-04",
+      "route": "help",
+      "retrieved_ids": [
+        "h4",
+        "c8",
+        "h10",
+        "h12",
+        "h13"
+      ],
+      "algorithmic": {
+        "recall_at_k": 1.0,
+        "precision_at_k": 0.2,
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_k": 1.0
+      },
+      "judged": {
+        "faithfulness": 1.0,
+        "context_precision": 1.0,
+        "answer_relevance": 0.4364357804719849,
+        "context_recall": 1.0
+      },
+      "unsupported_claims": [],
+      "answer": "To assign a task, open the task and pick a teammate in the Assignee field. Data export requests are handled by admins from the Privacy page."
+    },
+    {
+      "case_id": "help-05",
+      "route": "help",
+      "retrieved_ids": [
+        "h5",
+        "c8",
+        "h10",
+        "h12",
+        "h13"
+      ],
+      "algorithmic": {
+        "recall_at_k": 1.0,
+        "precision_at_k": 0.2,
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_k": 1.0
+      },
+      "judged": {
+        "faithfulness": 1.0,
+        "context_precision": 1.0,
+        "answer_relevance": 0.37796447300922725,
+        "context_recall": 1.0
+      },
+      "unsupported_claims": [],
+      "answer": "Recurring tasks repeat on a daily, weekly or monthly schedule. Data export requests are handled by admins from the Privacy page."
+    },
+    {
+      "case_id": "help-06",
+      "route": "help",
+      "retrieved_ids": [
+        "h6",
+        "c1",
+        "c4",
+        "c8",
+        "h15"
+      ],
+      "algorithmic": {
+        "recall_at_k": 1.0,
+        "precision_at_k": 0.2,
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_k": 1.0
+      },
+      "judged": {
+        "faithfulness": 1.0,
+        "context_precision": 1.0,
+        "answer_relevance": 0.5725185439599393,
+        "context_recall": 1.0
+      },
+      "unsupported_claims": [],
+      "answer": "To share a document, press Share and enter a teammate's email address. Deleted documents stay in the trash for 30 days before permanent removal."
+    },
+    {
+      "case_id": "help-07",
+      "route": "help",
+      "retrieved_ids": [
+        "h7",
+        "c1",
+        "c4",
+        "c8",
+        "h15"
+      ],
+      "algorithmic": {
+        "recall_at_k": 1.0,
+        "precision_at_k": 0.2,
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_k": 1.0
+      },
+      "judged": {
+        "faithfulness": 1.0,
+        "context_precision": 1.0,
+        "answer_relevance": 0.3109018804383638,
+        "context_recall": 1.0
+      },
+      "unsupported_claims": [],
+      "answer": "Document versions are saved automatically every few minutes. Deleted documents stay in the trash for 30 days before permanent removal."
+    },
+    {
+      "case_id": "help-08",
+      "route": "help",
+      "retrieved_ids": [
+        "h8",
+        "c4",
+        "c8",
+        "c1",
+        "h15"
+      ],
+      "algorithmic": {
+        "recall_at_k": 1.0,
+        "precision_at_k": 0.2,
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_k": 1.0
+      },
+      "judged": {
+        "faithfulness": 1.0,
+        "context_precision": 1.0,
+        "answer_relevance": 0.4714045207910318,
+        "context_recall": 1.0
+      },
+      "unsupported_claims": [],
+      "answer": "To export a document as PDF, open the menu and choose Export. Guests can only see projects they are invited to."
+    },
+    {
+      "case_id": "help-09",
+      "route": "help",
+      "retrieved_ids": [
+        "h9",
+        "c10",
+        "h10",
+        "h11",
+        "h5"
+      ],
+      "algorithmic": {
+        "recall_at_k": 1.0,
+        "precision_at_k": 0.2,
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_k": 1.0
+      },
+      "judged": {
+        "faithfulness": 1.0,
+        "context_precision": 1.0,
+        "answer_relevance": 0.5225020770543719,
+        "context_recall": 1.0
+      },
+      "unsupported_claims": [],
+      "answer": "To schedule a meeting, press New meeting and pick a date and attendees. Meeting recordings are stored for 90 days by default."
+    },
+    {
+      "case_id": "help-10",
+      "route": "help",
+      "retrieved_ids": [
+        "h14",
+        "c4",
+        "h12",
+        "h13"
+      ],
+      "algorithmic": {
+        "recall_at_k": 1.0,
+        "precision_at_k": 0.2,
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_k": 1.0
+      },
+      "judged": {
+        "faithfulness": 1.0,
+        "context_precision": 1.0,
+        "answer_relevance": 0.3563483225498992,
+        "context_recall": 1.0
+      },
+      "unsupported_claims": [],
+      "answer": "To pause a workflow, open it and switch off the Active toggle. Guests can only see projects they are invited to."
+    }
+  ],
+  "routes": {
+    "compliance": {
+      "cases": 10,
+      "algorithmic": {
+        "hit_rate": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_k": 1.0,
+        "precision_at_k": 0.2,
+        "recall_at_k": 1.0
+      },
+      "judged": {
+        "answer_relevance": 0.4332694333085514,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "faithfulness": 1.0
+      }
+    },
+    "help": {
+      "cases": 10,
+      "algorithmic": {
+        "hit_rate": 1.0,
+        "mrr": 0.95,
+        "ndcg_at_k": 0.9630929753571458,
+        "precision_at_k": 0.2,
+        "recall_at_k": 1.0
+      },
+      "judged": {
+        "answer_relevance": 0.44222423647463216,
+        "context_precision": 1.0,
+        "context_recall": 1.0,
+        "faithfulness": 1.0
+      }
+    }
+  }
+}

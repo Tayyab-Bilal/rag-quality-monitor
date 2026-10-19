@@ -1,0 +1,10 @@
+{"case_id": "compliance-01", "question": "How long do deleted documents stay in the trash?", "relevant_chunk_ids": ["c1"], "reference_answer": "Deleted documents stay in the trash for 30 days."}
+{"case_id": "compliance-02", "question": "How long are audit logs retained?", "relevant_chunk_ids": ["c2"], "reference_answer": "Audit logs are retained for 365 days."}
+{"case_id": "compliance-03", "question": "What roles can workspace members have?", "relevant_chunk_ids": ["c3"], "reference_answer": "Roles are Owner, Admin, Member and Guest."}
+{"case_id": "compliance-04", "question": "Can guests export documents?", "relevant_chunk_ids": ["c4"], "reference_answer": "Guests cannot create workflows or export documents."}
+{"case_id": "compliance-05", "question": "How do admins require two-factor authentication?", "relevant_chunk_ids": ["c5"], "reference_answer": "Admins turn on two-factor authentication under Security settings."}
+{"case_id": "compliance-06", "question": "When do sessions expire after inactivity?", "relevant_chunk_ids": ["c6"], "reference_answer": "Sessions expire after 12 hours of inactivity."}
+{"case_id": "compliance-07", "question": "How often are encryption keys rotated?", "relevant_chunk_ids": ["c7"], "reference_answer": "Encryption keys are rotated every 90 days."}
+{"case_id": "compliance-08", "question": "How do admins handle data export requests?", "relevant_chunk_ids": ["c8"], "reference_answer": "Data export requests are handled by admins from the Privacy page."}
+{"case_id": "compliance-09", "question": "How long are meeting recordings stored?", "relevant_chunk_ids": ["c10"], "reference_answer": "Meeting recordings are stored for 90 days by default."}
+{"case_id": "compliance-10", "question": "Does single sign-on support SAML?", "relevant_chunk_ids": ["c11"], "reference_answer": "Single sign-on supports SAML identity providers."}

@@ -1,0 +1,5 @@
+{
+  "algorithmic": {"recall_at_k": 0.9, "hit_rate": 0.9, "mrr": 0.8, "ndcg_at_k": 0.8},
+  "judged": {"faithfulness": 0.9, "context_precision": 0.7, "answer_relevance": 0.2},
+  "judged_tolerance": 0.05
+}

@@ -1,0 +1,10 @@
+{"case_id": "help-01", "question": "How do I create a project?", "relevant_chunk_ids": ["h1"], "reference_answer": "To create a project, open the Projects page and press New project."}
+{"case_id": "help-02", "question": "How do I archive a project?", "relevant_chunk_ids": ["h2"], "reference_answer": "To archive a project, open its settings and choose Archive."}
+{"case_id": "help-03", "question": "How do I add a task to a project?", "relevant_chunk_ids": ["h3"], "reference_answer": "To add a task, open a project and press New task."}
+{"case_id": "help-04", "question": "How do I assign a task to a teammate?", "relevant_chunk_ids": ["h4"], "reference_answer": "To assign a task, pick a teammate in the Assignee field."}
+{"case_id": "help-05", "question": "How do I make a task repeat on a schedule?", "relevant_chunk_ids": ["h5"], "reference_answer": "Recurring tasks repeat on a daily, weekly or monthly schedule."}
+{"case_id": "help-06", "question": "How do I share a document with a teammate?", "relevant_chunk_ids": ["h6"], "reference_answer": "To share a document, press Share and enter a teammate's email address."}
+{"case_id": "help-07", "question": "How do I restore an earlier version of a document?", "relevant_chunk_ids": ["h7"], "reference_answer": "Open version history to restore an earlier version of a document."}
+{"case_id": "help-08", "question": "How do I export a document as PDF?", "relevant_chunk_ids": ["h8"], "reference_answer": "To export a document as PDF, open the menu and choose Export."}
+{"case_id": "help-09", "question": "How do I schedule a meeting with attendees?", "relevant_chunk_ids": ["h9"], "reference_answer": "To schedule a meeting, press New meeting and pick a date and attendees."}
+{"case_id": "help-10", "question": "How do I pause a workflow?", "relevant_chunk_ids": ["h14"], "reference_answer": "To pause a workflow, open it and switch off the Active toggle."}

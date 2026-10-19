@@ -1,0 +1,23 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: pip install -e ".[dev,api]"
+      - run: ruff check .
+      - run: pytest -q
+      - run: python examples/demo.py
+      # Hook 3 as a CI gate: fails the build on a threshold breach or a regression against the
+      # committed baseline. After an intended change, regenerate it with --write examples/baseline.json.
+      - run: >
+          python -m rag_quality_monitor.suite
+          --golden examples/golden --thresholds examples/thresholds.json
+          --baseline examples/baseline.json
