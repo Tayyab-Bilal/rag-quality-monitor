@@ -6,6 +6,46 @@ Evaluate a RAG system across four dimensions, with three hooks that say where ea
 
 [![CI](https://github.com/Tayyab-Bilal/rag-quality-monitor/actions/workflows/ci.yml/badge.svg)](https://github.com/Tayyab-Bilal/rag-quality-monitor/actions/workflows/ci.yml)
 
+## At a glance
+
+**What it is.** A small Python library that checks how good a RAG system is, along four dimensions: retrieval, answer generation, offline regression and a golden dataset. It splits the checks into three hooks, so each one runs where its cost and its evidence fit.
+
+**What is built** (in this repo, working and tested)
+
+- Retrieval metrics: Recall@k, precision@k, hit rate, MRR, nDCG@k. Pure functions, no LLM. `metrics/retrieval.py`: `recall_at_k`, `precision_at_k`, `hit_rate`, `mrr`, `ndcg_at_k`.
+- Answer metrics: faithfulness with per-claim verdicts, answer relevance, context precision, context recall. `metrics/generation.py`: `faithfulness`, `answer_relevance`, `context_precision`, `context_recall`.
+- Judge adapters: a `Judge` and `Embedder` interface, deterministic fakes for tests, and optional Anthropic and OpenAI adapters. `judge/base.py`: `Judge`; `judge/fake.py`: `FakeJudge`; `judge/anthropic_judge.py`: `AnthropicJudge`; `judge/openai_judge.py`: `OpenAIJudge`; `judge/env.py`: `judge_from_env`.
+- Hook 1, heuristics on every query: score gap, empty results and p95 latency alerts over a rolling window. `hook1/monitor.py`: `instrument`, `RetrievalMonitor`; `hook1/stats.py`: `retrieval_stats`.
+- Hook 2, sampled judge on live traffic: per-route sampling, a guard that rejects non-raw contexts, batch scoring with a judge-call cap, and drift alerts. `hook2/sampler.py`: `Sampler`; `hook2/capture.py`: `SampleCapture`, `check_raw_chunks`; `hook2/batch.py`: `run_batch`; `hook2/drift.py`: `check_drift`.
+- Hook 3, the CI gate: loads golden JSONL, runs the suite, checks thresholds, compares with a saved baseline report, and exits non-zero on a failure. `hook3/golden.py`: `load_golden_dir`; `hook3/runner.py`: `run_suite`; `hook3/thresholds.py`: `check_thresholds`, `find_regressions`; `suite.py`: `main`.
+- The CI workflow runs ruff, pytest, the demo, and then the suite against the committed `examples/baseline.json`. `.github/workflows/ci.yml`.
+- A tenant-scoped SQLite store and a small FastAPI app. `store.py`: `Store`; `api.py`: `create_app`.
+
+**What is not built, or is simplified here**
+
+- The judge in tests and the demo is a fake word-overlap heuristic. It makes runs repeatable. It is not a quality signal.
+- The adapters for real LLM judges are tested only with fake clients. No test or demo calls a live model.
+- Gap collapse uses a fixed threshold per route. It does not learn it from a healthy baseline.
+- The text check for an intermediate answer cannot catch a paraphrase. Provenance (`retrieved=`) is the real guard.
+- Capture is an in-process task cap, not a durable queue. A crash can lose in-flight samples, and overflow is dropped and counted.
+- The judge cost cap is checked between samples, so a batch can overshoot it by one sample.
+- Drift compares batch means with no significance test, so small batches are noisy.
+- The example pipeline (`examples/acme_rag.py`) and the golden sets are small fictional data.
+
+**The Three-Hook Model in 3 lines**
+
+- Hook 1, every query, no LLM: record score stats and alert on collapse, empty results and slow p95. In `hook1/`.
+- Hook 2, a sample of live traffic, judged in the background, no labels needed: faithfulness, relevance, context precision, drift. In `hook2/`.
+- Hook 3, every PR or nightly, golden set with labels: thresholds and regression against a baseline, exit code gates CI. In `hook3/` and `suite.py`.
+
+**Run it**
+
+```bash
+.venv/bin/pytest -q
+```
+
+Current result: 165 passed. No network and no API keys needed. `.venv/bin/python examples/demo.py` prints the full three-hook story.
+
 ## The design
 
 **Read the full design notes: [docs/design.md](docs/design.md).** This repo implements them.
@@ -309,7 +349,7 @@ flowchart LR
 ## Testing
 
 ```bash
-.venv/bin/pytest -q        # about 3 seconds, no network
+.venv/bin/pytest -q        # a few seconds, no network
 .venv/bin/ruff check .
 ```
 
