@@ -46,6 +46,87 @@ Evaluate a RAG system across four dimensions, with three hooks that say where ea
 
 Current result: 165 passed. No network and no API keys needed. `.venv/bin/python examples/demo.py` prints the full three-hook story.
 
+## How each part works, one by one
+
+Plain-English walk through the seven mechanisms that make this repo work. Each one says what goes wrong without it, how it works, and which tests prove it.
+
+### 1. Retrieval metrics and claim-level faithfulness
+
+- **Risk / problem:** One averaged score hides what went wrong. A retriever can quietly lose the right chunk, or an answer can contain one invented sentence, and a single number never says which.
+- **How it works:**
+  - The retrieval scores compare the ids the retriever returned against the ids a human labelled as relevant. No model is involved, so the same input always gives the same number (`metrics/retrieval.py: recall_at_k`, `ndcg_at_k`).
+  - The edge cases are decided up front. A duplicate id counts once, a short result list is still divided by k so a retriever that returns too little is punished, and a case with no labelled chunk raises an error instead of returning a flattering score (`metrics/retrieval.py: _check`).
+  - Faithfulness splits the answer into separate claims, asks the judge whether the retrieved chunks support each one, and scores the share that are supported. The verdict for every claim is kept, so you see the exact unsupported sentence, not just a mean (`metrics/generation.py: faithfulness`).
+  - An answer with no claims gets no score, not a perfect one. Answer relevance does the same when no questions come back, so missing evidence never looks like a good or bad result (`metrics/generation.py: answer_relevance`).
+  - Context precision is rank aware. A relevant chunk at rank one scores better than the same chunk at rank five (`metrics/generation.py: context_precision`).
+- **Tests that prove it:** `tests/test_retrieval_metrics.py`: `test_no_relevant_ids_is_an_error_not_a_score`, `test_precision_divides_by_k_when_fewer_results_come_back`, `test_duplicates_count_once`, and 8 more in that file. `tests/test_generation_metrics.py`: `test_faithfulness_keeps_per_claim_verdicts_and_unsupported_claims`, `test_faithfulness_with_no_claims_has_no_score`, `test_context_precision_is_rank_aware`, and 5 more in that file.
+
+### 2. The judge interface and its adapters
+
+- **Risk / problem:** If the metrics are tied to one provider, every test needs a live model and a provider change rewrites the code. A judge that returns junk can also poison scores without anyone noticing.
+- **How it works:**
+  - The metrics only talk to a small judge interface and an embedder interface. Tests plug in a fake judge, so nothing needs a network or a key (`judge/base.py: Judge`).
+  - The real Anthropic and OpenAI adapters share one base. They ask for JSON and check the reply against a schema, and a bad reply, a refusal or a cut-off reply becomes a clear judge error rather than a silent zero (`judge/llm.py: parse_json`).
+  - If the judge returns the wrong number of verdicts for the claims, that is an error too. If it cites a chunk id that was never in the prompt, the id is dropped so an invented source never counts as evidence (`judge/llm.py: LLMJudge.verify_claims`).
+  - The fake judge is only a word-overlap heuristic, so it keeps runs repeatable but says nothing about real quality. The adapters are tested with fake clients only (`judge/fake.py: FakeJudge`).
+- **Tests that prove it:** `tests/test_adapters.py`: `test_anthropic_judge_verify_claims_maps_verdicts_and_drops_invented_chunk_ids`, `test_anthropic_judge_wrong_number_of_verdicts_is_a_judge_error`, `test_anthropic_judge_refusal_is_a_judge_error`, and 14 more in that file.
+
+### 3. Hook 1: free heuristics on every query
+
+- **Risk / problem:** Retrieval can go bad slowly. Scores flatten, results come back empty or search gets slow, and nobody sees it until users complain.
+- **How it works:**
+  - A wrapper around the retriever records the score spread, the number of chunks and the latency of every call. It needs no judge, so it costs almost nothing (`hook1/monitor.py: instrument`).
+  - The main signal is the score gap, the top score minus the last score in the top k. If every chunk scores about the same, the retriever has lost its ability to tell good from bad, even while the right chunk is still in the list and a judged precision score looks fine (`hook1/stats.py: retrieval_stats`).
+  - A rolling window of the last 200 calls per tenant and route feeds three alerts: collapsed gap (under 0.15), too many empty results (over 10 percent) and slow p95 latency (over 500 ms). Nothing alerts until the window has at least 20 calls, so a tiny sample cannot raise a false alarm (`hook1/monitor.py: RetrievalMonitor.check`).
+  - If the monitor or the store breaks, the error is logged and the search result is still returned. A broken monitor must never take down search.
+  - Simplification: the gap threshold is a fixed number per route, not learned from healthy traffic.
+- **Tests that prove it:** `tests/test_hook1.py`: `test_gap_collapse_fires_while_relevant_chunk_is_still_in_top_k_and_judged_precision_misses_it`, `test_instrument_never_raises_when_the_store_is_broken`, `test_too_few_events_gives_no_verdict`, and 10 more in that file.
+
+### 4. Hook 2: sampling, capture and the raw-context guard
+
+- **Risk / problem:** Judging every query is too expensive, and the judge is only meaningful if it sees what the retriever really returned. If a pipeline logs an intermediate model's answer as the "context", the scores quietly compare one answer with another.
+- **How it works:**
+  - Whether a query is sampled depends on a hash of its sample id compared with the route's rate (2 percent by default, 100 percent for a sensitive route). The same id always gets the same decision, so replays and tests are repeatable (`hook2/sampler.py: Sampler.should_sample`).
+  - Capture runs after the answer is sent, in a background task. It never blocks and never raises. If too many writes are waiting (1000 by default) the sample is dropped and counted, which is a stated simplification, not a durable queue (`hook2/capture.py: SampleCapture.capture`).
+  - The guard runs before sampling, so a buggy pipeline shows up even at a 2 percent rate. The strongest check is provenance: every context must be a chunk the retriever really returned for this request, and with the full result the text must match too. A made-up id or an edited text is rejected and counted (`hook2/capture.py: check_raw_chunks`).
+  - There is also a word-sequence overlap check as a secondary tripwire. It only flags, it never rejects, because a short FAQ chunk can honestly equal an extractive answer. It cannot catch a reworded answer, which is why provenance is the real guard (`hook2/capture.py: suspected_intermediate_answer`).
+  - If the caller does not pass what the retriever returned, only the shape check and the tripwire run, and a counter shows how often provenance went unchecked.
+- **Tests that prove it:** `tests/test_hook2_sampling.py`: `test_sampler_is_deterministic_per_sample_id`, `test_capture_does_not_block_the_caller_when_the_store_is_slow`, `test_queue_overflow_is_dropped_and_counted`, and 10 more in that file. Attack and guard tests in full: `test_sample_with_an_intermediate_answer_as_context_is_rejected`, `test_longer_specialist_answer_with_an_invented_id_is_rejected_by_provenance`, `test_two_sub_agent_answers_as_contexts_are_rejected`, `test_known_id_with_altered_text_is_rejected_when_the_full_result_is_given`, `test_short_faq_chunk_equal_to_the_extractive_answer_is_accepted_and_at_most_flagged`, `test_text_heuristic_cannot_catch_a_paraphrase`, `test_chunks_without_ids_are_not_raw_chunks`, `test_rejection_is_counted_even_when_the_sample_would_have_been_sampled_out`.
+
+### 5. Hook 2: batch scoring, cost cap and drift
+
+- **Risk / problem:** Scoring in the background can double-score a sample, run up an unbounded judge bill, lose work when a worker dies, or compare scores that came from different judges and call it drift.
+- **How it works:**
+  - A batch claims pending samples with one conditional database update that stamps them with a fresh token. The database serialises writers, so two batches racing each other can never score the same sample (`store.py: Store.claim_samples`).
+  - A batch waits for at least 10 pending samples, unless the oldest has waited an hour. Samples claimed more than 10 minutes ago, from a crashed worker or a failed save, go back to pending first (`hook2/batch.py: run_batch`).
+  - Every judge call is counted. At the cap (500 calls by default) the batch stops and puts the unprocessed samples back to pending. The check happens between samples, so a batch can overshoot by one sample. A judge error marks only that sample as failed and the batch carries on (`judge/base.py: CountingJudge`).
+  - When faithfulness is 0.80 or lower, the unsupported claims are saved with the sample, so a low score comes with a reason.
+  - Every batch carries a config hash built from the judge model, embedder, prompt version and metric set. Drift only compares batches with the same hash (`hook2/batch.py: config_hash`).
+  - Drift compares a batch mean with the average of the last 10 earlier batches. It alerts when a metric is more than 15 percent below that average, and gives no verdict with fewer than 3 earlier batches. There is no significance test, so small batches are noisy (`hook2/drift.py: check_drift`).
+- **Tests that prove it:** `tests/test_hook2_batch.py`: `test_batch_claim_is_atomic_across_racing_workers`, `test_cost_cap_leaves_the_remainder_pending`, `test_drift_alert_on_a_drop_larger_than_15_percent`, and 20 more in that file.
+
+### 6. Hook 3: golden set, thresholds and the regression gate
+
+- **Risk / problem:** Without a labelled set that runs in CI, nothing stops a bad change from merging. A gate that silently checks nothing is worse than no gate.
+- **How it works:**
+  - The golden set is plain JSONL files in the repo, one per route, so changes are reviewed in pull requests. A bad line fails with its line number (`hook3/golden.py: load_golden_dir`).
+  - The suite runs the real retriever and generator over every case. It always computes the retrieval metrics, and it adds the judged ones when a generator and judge are given (`hook3/runner.py: run_suite`).
+  - The two kinds of metric are gated differently. Retrieval metrics are exact, so they must meet their limit with no slack. Judged metrics get a small tolerance (0.05 by default), because even a judge at temperature zero is not fully repeatable (`hook3/thresholds.py: check_thresholds`).
+  - A threshold on a metric that was not measured counts as a failure, and a threshold file with a typo, an unknown metric or no metrics is rejected. So the gate cannot quietly turn itself off.
+  - The report is also compared with a saved baseline report. A metric that got worse fails the build even if it is still above its threshold. Judged metrics are only compared when the judge, embedder, prompt and golden set are the same (`hook3/thresholds.py: find_regressions`).
+  - The command exits with 0 for pass, 1 for a failure or regression and 2 for a bad input file, and CI runs it against the committed baseline (`suite.py: main`).
+- **Tests that prove it:** `tests/test_hook3.py`: `test_regression_vs_baseline_is_flagged_while_still_above_threshold`, `test_unmeasured_threshold_fails_instead_of_being_skipped`, `test_judged_metrics_use_a_tolerance_but_algorithmic_metrics_are_strict`, and 17 more in that file. Gate-hardening tests in full: `test_threshold_file_with_a_typo_key_is_rejected_instead_of_silently_ignored`, `test_threshold_file_that_defines_no_metrics_is_rejected`, `test_threshold_file_with_an_unknown_metric_name_is_rejected`, `test_check_thresholds_refuses_an_empty_gate`, `test_judged_regressions_are_skipped_when_the_baseline_used_another_config`.
+
+### 7. The tenant-scoped store and API
+
+- **Risk / problem:** One shared database means one forgotten filter shows tenant A's data to tenant B, and a caller who can name their own tenant or spending limit can read or spend someone else's.
+- **How it works:**
+  - Every store method requires a tenant id, and every query filters on it. Samples are keyed by tenant and sample id together, so two tenants can reuse the same id without clashing (`store.py: Store`).
+  - The API takes the tenant from the verified bearer token. No query parameter or body field can set it, and a missing or invalid token gets a 401 (`api.py: create_app`).
+  - A sample that belongs to another tenant gets the same 404 as one that does not exist, so the API does not even confirm that it exists.
+  - The judge-call cap is server configuration. A request may lower it but can never raise it (`api.py: create_app`).
+- **Tests that prove it:** `tests/test_api.py`: `test_tenant_b_cannot_read_tenant_a_sample`, `test_tenant_cannot_be_overridden_by_any_query_or_body_field`, `test_a_request_cannot_raise_the_servers_judge_call_cap`, and 7 more in that file. Also `tests/test_hook2_batch.py`: `test_batch_is_scoped_to_its_tenant`.
+
 ## The design
 
 **Read the full design notes: [docs/design.md](docs/design.md).** This repo implements them.
@@ -100,6 +181,8 @@ traffic, curated cases).
 No single hook is enough. Together they cover live retrieval, live answers and changes before they ship.
 
 ## What it does
+
+(Short list. The mechanisms are explained in [How each part works, one by one](#how-each-part-works-one-by-one).)
 
 - **Retrieval metrics** (`metrics/retrieval.py`): recall@k, precision@k, hit rate, MRR, nDCG@k.
   Pure and deterministic, with defined edge cases.
